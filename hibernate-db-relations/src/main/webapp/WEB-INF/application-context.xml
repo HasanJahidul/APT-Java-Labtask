@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans [
+        <!ELEMENT beans (mvc:annotation-driven|context:component-scan|mvc:resources|bean|tx:annotation-driven)*>
+        <!ATTLIST beans
+                xmlns CDATA #REQUIRED
+                xmlns:xsi CDATA #REQUIRED
+                xmlns:context CDATA #REQUIRED
+                xmlns:mvc CDATA #REQUIRED
+                xmlns:tx CDATA #REQUIRED
+                xsi:schemaLocation CDATA #REQUIRED>
+        <!ELEMENT mvc:annotation-driven (#PCDATA)>
+        <!ELEMENT context:component-scan (#PCDATA)>
+        <!ATTLIST context:component-scan
+                base-package CDATA #REQUIRED>
+        <!ELEMENT mvc:resources (#PCDATA)>
+        <!ATTLIST mvc:resources
+                mapping CDATA #REQUIRED
+                location CDATA #REQUIRED>
+        <!ELEMENT bean (property)*>
+        <!ATTLIST bean
+                class CDATA #REQUIRED
+                id CDATA #REQUIRED>
+        <!ELEMENT property (props)*>
+        <!ATTLIST property
+                name CDATA #REQUIRED
+                ref CDATA #IMPLIED
+                value CDATA #IMPLIED>
+        <!ELEMENT props (prop)*>
+        <!ELEMENT prop (#PCDATA)>
+        <!ATTLIST prop
+                key CDATA #REQUIRED>
+        <!ELEMENT tx:annotation-driven (#PCDATA)>
+        ]>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <mvc:annotation-driven/>
+
+    <context:component-scan base-package="com.dao,com.service,com.controller"/>
+
+    <mvc:resources mapping="/css/**" location="/css/" />
+
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/view/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <bean id="dataSource" class="com.mysql.cj.jdbc.MysqlDataSource">
+        <property name="databaseName" value="hibernate_tutorial"/>
+        <property name="url" value="jdbc:mysql://server.ashrhmn.com:3306/hibernate"/>
+        <property name="user" value="root"/>
+        <property name="password" value="root"/>
+    </bean>
+
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="com.model"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="show_sql">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <tx:annotation-driven />
+
+</beans>
